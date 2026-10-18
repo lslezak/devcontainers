@@ -34,7 +34,7 @@ jobs:
           while IFS= read -r f; do
             [ -n "$f" ] || continue
             echo "::group::$f"
-            docker run --rm -i hadolint/hadolint < "$f" || status=1
+            docker run --rm -i -v "$PWD/.hadolint.yaml:/.hadolint.yaml:ro" hadolint/hadolint hadolint --config /.hadolint.yaml - < "$f" || status=1
             echo "::endgroup::"
           done <<< "${{ steps.find.outputs.files }}"
           exit $status
