@@ -1,5 +1,5 @@
 # The openSUSE base image
-# hadolint ignore=DL3006
+# hadolint ignore=DL3007
 FROM registry.opensuse.org/documentation/containers/15.6/opensuse-daps-toolchain:latest
 
 # Packages to install
@@ -31,7 +31,8 @@ ARG BASE_PACKAGES="bash-completion \
   yq"
 
 # Install the packages
-RUN zypper --non-interactive --gpg-auto-import-keys install --no-recommends $BASE_PACKAGES
+RUN zypper --non-interactive --gpg-auto-import-keys install --no-recommends $BASE_PACKAGES \
+    && zypper clean -a
 
 # Set up a non-root user (recommended for dev containers)
 # hadolint ignore=DL3064
