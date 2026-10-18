@@ -1,0 +1,68 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  hadolint:
+    name: Lint Dockerfiles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Find Dockerfiles
+        id: find
+        run: |
+          # -type f skips symlinked duplicates
+          files=$(find . -type f \( -name Dockerfile -o -name 'Dockerfile.*' -o -name '*.Dockerfile' \) -not -path './.git/*')
+          echo "Found:"; echo "$files"
+          {
+            echo "files<<DOCKERFILES_END"
+            echo "$files"
+            echo "DOCKERFILES_END"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run hadolint
+        run: |
+          docker pull -q hadolint/hadolint
+          status=0
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            echo "::group::$f"
+            docker run --rm -i hadolint/hadolint < "$f" || status=1
+            echo "::endgroup::"
+          done <<< "${{ steps.find.outputs.files }}"
+          exit $status
+
+  devcontainer-json:
+    name: Validate devcontainer.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+
+      - name: Validate configurations and features
+        run: |
+          status=0
+          # -type f skips symlinked duplicates
+          while IFS= read -r cfg; do
+            # the workspace folder is the parent of the .devcontainer directory
+            dir=$(dirname "$(dirname "$cfg")")
+            echo "::group::$cfg"
+            # parses the JSONC, fails on syntax errors and unresolvable features
+            devcontainer read-configuration --workspace-folder "$dir" \
+              --config "$cfg" --include-features-configuration >/dev/null || {
+              echo "::error file=$cfg::Invalid devcontainer configuration"
+              status=1
+            }
+            echo "::endgroup::"
+          done < <(find . -type f \( -path '*/.devcontainer/devcontainer.json' -o -name '.devcontainer.json' \) -not -path './.git/*')
+
+          exit $status

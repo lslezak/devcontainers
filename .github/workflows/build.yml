@@ -1,0 +1,49 @@
+name: Build images
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    name: Find devcontainers
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.find.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: find
+        run: |
+          # -type f skips symlinked duplicates
+          matrix=$(find . -type f \( -path '*/.devcontainer/devcontainer.json' -o -name '.devcontainer.json' \) -not -path './.git/*' \
+            | sed 's|^\./||' | sort \
+            | jq -R '{config: ., folder: (sub("/?\\.devcontainer(/devcontainer)?\\.json$"; "") | if . == "" then "." else . end)}' \
+            | jq -sc '{include: .}')
+          echo "$matrix"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.config }}
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+
+      - name: Build image
+        run: |
+          devcontainer build \
+            --workspace-folder "${{ matrix.folder }}" \
+            --config "${{ matrix.config }}" \
+            --image-name "devcontainer-test:${{ github.sha }}"
