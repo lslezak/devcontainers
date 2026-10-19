@@ -1,0 +1,21 @@
+{
+  "id": "agama-ruby",
+  "version": "1.0.0",
+  "name": "Agama Ruby",
+  "description": "Agama Ruby service development tools",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // ------------------
+        // RUBY SERVICE EXTENSIONS
+        // ------------------
+        // Ruby support
+        "Shopify.ruby-lsp",
+        // autocomplete Ruby block ending 
+        "kaiwood.endwise",
+        // Generate Yardoc comments
+        "pavlitsky.yard"
+      ]
+    }
+  }
+}
