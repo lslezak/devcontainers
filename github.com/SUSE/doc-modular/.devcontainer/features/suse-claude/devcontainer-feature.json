@@ -2,7 +2,7 @@
   "id": "suse-claude",
   "version": "1.0.0",
   "name": "Anthropic Claude",
-  "description": "Installs the Claude Code extension and the default ~/.claude/settings.json file (the Google Cloud CLI is installed in the Dockerfile)",
+  "description": "Installs the Claude Code extension and the default ~/.claude/settings.json file (the Google Cloud CLI is installed in the Containerfile)",
   "customizations": {
     "vscode": {
       "settings": {

@@ -10,16 +10,16 @@ permissions:
 
 jobs:
   hadolint:
-    name: Lint Dockerfiles
+    name: Lint Containerfiles
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
-      - name: Find Dockerfiles
+      - name: Find Containerfiles
         id: find
         run: |
           # -type f skips symlinked duplicates
-          files=$(find . -type f \( -name Dockerfile -o -name 'Dockerfile.*' -o -name '*.Dockerfile' \) -not -path './.git/*')
+          files=$(find . -type f \( -name Containerfile -o -name 'Containerfile.*' -o -name '*.Containerfile' \) -not -path './.git/*')
           echo "Found:"; echo "$files"
           {
             echo "files<<DOCKERFILES_END"
