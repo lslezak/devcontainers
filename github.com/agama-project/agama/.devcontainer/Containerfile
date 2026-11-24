@@ -61,7 +61,7 @@ RUN zypper --non-interactive --gpg-auto-import-keys install --no-recommends --al
 # (declared after the common layer, changing it does not invalidate that layer)
 ARG EXTRA_PACKAGES=""
 
-RUN if [ -n "$DEVEL_PACKAGES" ]; then \
+RUN if [ -n "$EXTRA_PACKAGES" ]; then \
       zypper --non-interactive --gpg-auto-import-keys install --no-recommends --allow-downgrade \
         $EXTRA_PACKAGES \
       && if [ "$REPO_CLEANUP" = "true" ]; then zypper clean -a; fi; \

@@ -49,10 +49,6 @@
         "terminal.integrated.defaultProfile.linux": "bash",
         // disable all Copilot AI features
         "chat.disableAIFeatures": true,
-        "files.associations": {
-          // the DC-* files use the INI format
-          "DC-*": "ini"
-        },
         // serve only the built files
 	      "liveServer.settings.root": "/build"
       },
