@@ -57,13 +57,22 @@ RUN zypper --non-interactive --gpg-auto-import-keys install --no-recommends \
 # packages needed for developing your project, add your own here (declared after
 # the common layer, changing it does not invalidate that layer and allows
 # sharing the base packages with multiple containers)
-ARG DEVEL_PACKAGES=""
+ARG DEVEL_PACKAGES="\
+    hadolint \
+    python3-pipx"
 
 RUN if [ -n "$DEVEL_PACKAGES" ]; then \
       zypper --non-interactive --gpg-auto-import-keys install --no-recommends \
         $DEVEL_PACKAGES \
       && if [ "$REPO_CLEANUP" = "true" ]; then zypper clean -a; fi; \
     fi
+
+# Install check-jsonschema for validating the devcontainer.json files (json5 is
+# needed for parsing JSONC files). Install it globally, the home directory is
+# overlaid by a persistent volume at runtime.
+RUN export PIPX_HOME=/opt/pipx PIPX_BIN_DIR=/usr/local/bin \
+    && pipx install check-jsonschema \
+    && pipx inject check-jsonschema json5
 
 # Set up a non-root user (recommended for dev containers)
 # hadolint ignore=DL3064

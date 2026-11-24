@@ -1,5 +1,5 @@
 # The DAPS base image
-# hadolint ignore=DL3006
+# hadolint ignore=DL3007
 FROM registry.opensuse.org/documentation/containers/15.6/opensuse-daps-toolchain:latest
 
 # Packages to install
@@ -36,6 +36,7 @@ ARG BASE_PACKAGES="bash-completion \
 # RUN zypper modifyrepo --disable openSUSE:repo-openh264
 
 # Install the packages
+# hadolint ignore=DL3036
 RUN zypper --non-interactive --gpg-auto-import-keys install --no-recommends $BASE_PACKAGES
 
 # Set up a non-root user (recommended for dev containers)
