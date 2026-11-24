@@ -42,7 +42,8 @@ The `github.com/<org>/<repo>` layout matches what VS Code expects for shared
 repository configurations. Clone this repository and point VS Code to it, then
 projects don't need their own `.devcontainer/`:
 
-1. Clone this repository, for example to `~/devcontainers`.
+1. Clone this repository, for example to `~/devcontainers`. (If you want to
+   track your changes then fork the repository and clone your fork.)
 2. Add it to the VS Code user settings (the path should point to the directory
    which contains the `github.com` subdirectory):
 
